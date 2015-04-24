@@ -465,7 +465,7 @@ test("A hasMany relationship can be reloaded even if it failed at the first time
   env.adapter.findHasMany = function(store, record, link, relationship) {
     loadingCount++;
     if (loadingCount % 2 === 0) {
-      return Ember.RSVP.reject()
+      return Ember.RSVP.reject();
     } else {
       return Ember.RSVP.resolve([
         { id: 1, body: "FirstUpdated" },
@@ -473,16 +473,16 @@ test("A hasMany relationship can be reloaded even if it failed at the first time
       ]);
     }
   };
-  run(function(){
+  run(function() {
     env.store.find('post', 1).then(async(function(post) {
       var comments = post.get('comments');
       return comments.then(null, async(function() {
         return comments.reload();
-      })).then(async(function(manyArray){
+      })).then(async(function(manyArray) {
         equal(manyArray.get('isLoaded'), true, "the reload worked, comments are now loaded");
         return manyArray.reload().then(null, async(function () {
-          equal(manyArray.get('isLoaded'), false, "the second reload failed, comments are not loaded");
-          return manyArray.reload().then(async(function(reloadedManyArray){
+          equal(manyArray.get('isLoaded'), true, "the second reload failed, comments are still loaded though");
+          return manyArray.reload().then(async(function(reloadedManyArray) {
             equal(reloadedManyArray.get('isLoaded'), true, "the third reload worked, comments are loaded again");
             ok(reloadedManyArray === manyArray, "the many array stays the same");
           }));
@@ -514,7 +514,7 @@ test("A hasMany relationship can be directly reloaded if it was fetched via link
       { id: 2, body: "Second" }
     ]);
   };
-  run(function(){
+  run(function() {
     env.store.find('post', 1).then(async(function(post) {
       return post.get('comments').reload().then(async(function(comments) {
         equal(comments.get('isLoaded'), true, "comments are loaded");
